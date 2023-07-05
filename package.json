@@ -13,6 +13,7 @@
     "typescript": "^5.1.6"
   },
   "devDependencies": {
+    "mysql2": "^3.4.5",
     "nodemon": "^2.0.22",
     "ts-node": "^10.9.1"
   },
