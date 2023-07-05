@@ -1,0 +1,8 @@
+{
+  "name": "coffee-daily-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/chuyeonbin/daily-coffee-server.git",
+  "author": "chuyeonbin",
+  "license": "MIT"
+}
