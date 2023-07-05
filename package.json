@@ -14,5 +14,10 @@
   "devDependencies": {
     "nodemon": "^2.0.22",
     "ts-node": "^10.9.1"
+  },
+  "scripts": {
+    "start": "node build/app.js",
+    "build": "tsc -p .",
+    "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/app.ts"
   }
 }
