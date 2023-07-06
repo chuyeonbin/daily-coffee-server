@@ -1,15 +1,34 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
+import cors from 'cors';
+import authRouter from './routes/auth';
+import getConnection from './database';
 
 const app = express();
 
-app.get('/welcome', (req: Request, res: Response, next: NextFunction) => {
-  res.send('welcome!');
-});
+app.use(
+  cors({
+    origin: true,
+  })
+);
 
-app.listen('1234', () => {
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use('/auth', authRouter);
+
+app.listen('8080', () => {
+  // getConnection(connection => {
+  //   connection.query('SELECT * FROM `daily-coffee` .users', (error, result) => {
+  //     if (error) throw error;
+  //     console.log(result);
+
+  //     connection.release();
+  //   });
+  // });
+
   console.log(`
   ################################################
-  🛡️  Server listening on port: 1234🛡️
+  🛡️  Server listening on port: 8080🛡️
   ################################################
 `);
 });
