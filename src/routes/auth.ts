@@ -1,6 +1,6 @@
 import express from 'express';
 import getConnection from '../database';
-import sendEmail from '../lib/mail';
+import sendEmail, { transporter } from '../lib/mail';
 
 const router = express.Router();
 
@@ -11,6 +11,7 @@ router.post('/sendemail', async (req, res) => {
     const info = await sendEmail(email);
 
     console.log(info);
+    transporter.close();
   } catch (err) {
     res.status(400).json('fail');
     throw err;
