@@ -14,4 +14,14 @@ const dbConfig: PoolOptions = {
 
 const pool = createPool(dbConfig).promise();
 
+const getConnection = async () => {
+  try {
+    const conn = await pool.getConnection();
+    return conn;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
 export default pool;
