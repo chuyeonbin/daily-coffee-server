@@ -16,8 +16,8 @@ const pool = createPool(dbConfig).promise();
 
 const getConnection = async () => {
   try {
-    const conn = await pool.getConnection();
-    return conn;
+    const connection = await pool.getConnection();
+    return connection;
   } catch (error) {
     console.error(error);
     return null;
@@ -42,6 +42,29 @@ export const findUserByEmail = async (email: string) => {
         'SELECT * FROM `daily-coffee`.users WHERE `email`=' + `"${email}"`
       );
       return user[0];
+    }
+  } catch (e) {
+    throw e;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
+export const upsertEmailAuth = async (email: string, code: string) => {
+  let connection = null;
+
+  try {
+    connection = await getConnection();
+
+    if (connection) {
+      await connection.execute(
+        'INSERT INTO `daily-coffee`.email_auth (email, code) VALUES ' +
+          `("${email}", "${code}") ` +
+          'ON DUPLICATE KEY UPDATE email=' +
+          `"${email}", code="${code}"`
+      );
     }
   } catch (e) {
     throw e;
