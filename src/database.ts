@@ -52,6 +52,15 @@ export const findUserByEmail = async (email: string) => {
   }
 };
 
+interface EmailAuthType extends RowDataPacket {
+  id: number;
+  email: string;
+  code: string;
+  logged: boolean;
+  create_at: Date;
+  updated_at: Date;
+}
+
 export const upsertEmailAuth = async (email: string, code: string) => {
   let connection = null;
 
@@ -65,6 +74,26 @@ export const upsertEmailAuth = async (email: string, code: string) => {
           'ON DUPLICATE KEY UPDATE email=' +
           `"${email}", code="${code}"`
       );
+    }
+  } catch (e) {
+    throw e;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
+export const findEmailAuthByCode = async (code: string) => {
+  let connection = null;
+  try {
+    connection = await getConnection();
+
+    if (connection) {
+      const [emailAuth] = await connection.execute<EmailAuthType[]>(
+        'SELECT * FROM `daily-coffee`.email_auth WHERE `code`=' + `"${code}"`
+      );
+      return emailAuth[0];
     }
   } catch (e) {
     throw e;
