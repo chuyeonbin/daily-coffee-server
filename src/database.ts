@@ -104,4 +104,24 @@ export const findEmailAuthByCode = async (code: string) => {
   }
 };
 
+export const findUserByNickname = async (nickname: string) => {
+  let connection = null;
+  try {
+    connection = await getConnection();
+
+    if (connection) {
+      const [user] = await connection.execute<UserType[]>(
+        'SELECT * FROM `daily-coffee`.users WHERE `nickname`=' + `"${nickname}"`
+      );
+      return user[0];
+    }
+  } catch (e) {
+    throw e;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
 export default pool;
