@@ -2,6 +2,7 @@ import express from 'express';
 import {
   findEmailAuthByCode,
   findUserByEmail,
+  findUserByNickname,
   upsertEmailAuth,
 } from '../database';
 import mailer from '../lib/mail';
@@ -65,6 +66,20 @@ router.get('/code/:code', async (req, res) => {
     }
 
     res.status(500).json(null);
+  } catch (err) {
+    throw err;
+  }
+});
+
+router.post('/duplicate', async (req, res) => {
+  const nickname = req.body.nickname;
+  try {
+    const user = await findUserByNickname(nickname);
+
+    if (!user) {
+      return res.status(201).json({ checked: true });
+    }
+    return res.status(201).json({ checked: false });
   } catch (err) {
     throw err;
   }
