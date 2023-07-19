@@ -124,4 +124,24 @@ export const findUserByNickname = async (nickname: string) => {
   }
 };
 
+export const createUser = async (email: string, nickname: string) => {
+  let connection = null;
+  try {
+    connection = await getConnection();
+
+    if (connection) {
+      await connection.execute(
+        'INSERT INTO `daily-coffee`.users (email, nickname) VALUES ' +
+          `("${email}", "${nickname}")`
+      );
+    }
+  } catch (e) {
+    throw e;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
 export default pool;
