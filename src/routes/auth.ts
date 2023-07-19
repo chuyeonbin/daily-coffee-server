@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  createUser,
   findEmailAuthByCode,
   findUserByEmail,
   findUserByNickname,
@@ -7,6 +8,7 @@ import {
 } from '../database';
 import mailer from '../lib/mail';
 import { nanoid } from 'nanoid';
+import { generateToken } from '../lib/token';
 
 const router = express.Router();
 
@@ -60,7 +62,7 @@ router.get('/code/:code', async (req, res) => {
     const user = await findUserByEmail(emailAuth.email);
 
     if (!user) {
-      return res.status(201).json({ checked: true });
+      return res.status(201).json({ checked: true, email: emailAuth.email });
     } else {
       // 유저정보랑 jwt token 넘겨주기
     }
@@ -80,6 +82,33 @@ router.post('/duplicate', async (req, res) => {
       return res.status(201).json({ checked: true });
     }
     return res.status(201).json({ checked: false });
+  } catch (err) {
+    throw err;
+  }
+});
+
+router.post('/register', async (req, res) => {
+  const email: string = req.body.email;
+  const nickname: string = req.body.nickname;
+  try {
+    await createUser(email, nickname);
+
+    const user = await findUserByEmail(email);
+
+    if (user) {
+      const accessToken = generateToken(
+        { user_id: user.id },
+        { expiresIn: '24h', subject: 'access_token' }
+      );
+      res.cookie('access_token', accessToken);
+
+      res.status(201).json({
+        user: {
+          email: user.email,
+          nickname: user.email,
+        },
+      });
+    }
   } catch (err) {
     throw err;
   }
