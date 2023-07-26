@@ -96,17 +96,17 @@ router.post('/register', async (req, res) => {
     const user = await findUserByEmail(email);
 
     if (user) {
-      const accessToken = generateToken(
+      const accessToken = await generateToken(
         { user_id: user.id },
-        { expiresIn: '24h', subject: 'access_token' }
+        { expiresIn: '24m', subject: 'access_token' }
       );
-      res.cookie('access_token', accessToken);
 
       res.status(201).json({
         user: {
           email: user.email,
-          nickname: user.email,
+          nickname: user.nickname,
         },
+        access_token: accessToken,
       });
     }
   } catch (err) {
