@@ -24,13 +24,33 @@ const getConnection = async () => {
   }
 };
 
-interface UserType extends RowDataPacket {
+export interface UserType extends RowDataPacket {
   id: number;
   email: string;
   nickname: string;
   create_at: Date;
   updated_at: Date;
 }
+
+export const findUserById = async (id: number) => {
+  let connection = null;
+  try {
+    connection = await getConnection();
+
+    if (connection) {
+      const [user] = await connection.execute<UserType[]>(
+        'SELECT * FROM `daily-coffee`.users WHERE `id`=' + `"${id}"`
+      );
+      return user[0];
+    }
+  } catch (e) {
+    throw e;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
 
 export const findUserByEmail = async (email: string) => {
   let connection = null;
