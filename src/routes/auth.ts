@@ -26,8 +26,15 @@ router.post('/sendemail', async (req, res) => {
         from: `"verify@daily-coffee.io" ${process.env.EMAIL_USER}`,
         to: email,
         subject: 'daily coffee 로그인',
-        text: '노드 패키지 nodemailer를 이용해 보낸 이메일임',
-        html: `<b>Hello world?</b><br /><a href=""/>`,
+        html: `<a href="http://localhost:3000/${
+          user ? 'email-login' : 'register'
+        }?code=${code}" style="text-decoration: none; width: 400px; text-align:center; display:block; margin: 0 auto; margin-top: 1rem; background: #8b95a1; padding-top: 1rem; color: white; font-size: 1.25rem; padding-bottom: 1rem; font-weight: 600; border-radius: 4px;">계속하기</a>
+  
+        <div style="text-align: center; margin-top: 1rem; color: #868e96; font-size: 0.85rem;"><div>위 버튼을 클릭하시거나, 다음 링크를 열으세요: <br/> <a style="color: #8b95a1;" href="http://localhost:3000/${
+          user ? 'email-login' : 'register'
+        }?code=${code}">http://localhost:3000/${
+          user ? 'email-login' : 'register'
+        }?code=${code}</a></div><br/><div>이 링크는 24시간동안 유효합니다. </div></div>`,
       });
     } catch (err) {
       throw err;
