@@ -34,7 +34,7 @@ router.post('/sendemail', async (req, res) => {
           user ? 'email-login' : 'register'
         }?code=${code}">http://localhost:3000/${
           user ? 'email-login' : 'register'
-        }?code=${code}</a></div><br/><div>이 링크는 24시간동안 유효합니다. </div></div>`,
+        }?code=${code}</a></div><br/><div>이 링크는 1시간동안 유효합니다. </div></div>`,
       });
     } catch (err) {
       throw err;
