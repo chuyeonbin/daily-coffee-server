@@ -69,12 +69,21 @@ router.get('/code/:code', async (req, res) => {
     const user = await findUserByEmail(emailAuth.email);
 
     if (!user) {
-      return res.status(201).json({ checked: true, email: emailAuth.email });
+      return res.status(200).json({ checked: true, email: emailAuth.email });
     } else {
-      // 유저정보랑 jwt token 넘겨주기
-    }
+      const accessToken = await generateToken(
+        { user_id: user.id },
+        { expiresIn: '24m', subject: 'access_token' }
+      );
 
-    res.status(500).json(null);
+      return res.status(200).json({
+        user: {
+          email: user.email,
+          nickname: user.nickname,
+        },
+        access_token: accessToken,
+      });
+    }
   } catch (err) {
     throw err;
   }
