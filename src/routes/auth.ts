@@ -74,7 +74,7 @@ router.get('/code/:code', async (req, res) => {
     const user = await findUserByEmail(emailAuth.email);
 
     if (!user) {
-      return res.status(200).json({ checked: true, email: emailAuth.email });
+      return res.status(200).json({ email: emailAuth.email });
     } else {
       const accessToken = await generateToken(
         { user_id: user.id },
