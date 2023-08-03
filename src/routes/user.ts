@@ -26,4 +26,9 @@ router.get('/', (req, res, next) => {
   )(req, res, next);
 });
 
+router.post('/logout', (req, res, next) => {
+  // reset Cookie;
+  return res.status(204).send('ok');
+});
+
 export default router;
