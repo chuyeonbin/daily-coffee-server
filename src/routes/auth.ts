@@ -78,7 +78,7 @@ router.get('/code/:code', async (req, res) => {
     } else {
       const accessToken = await generateToken(
         { user_id: user.id },
-        { expiresIn: '24m', subject: 'access_token' }
+        { expiresIn: '24h', subject: 'access_token' }
       );
 
       await updateEmailAuthByLogged(user.email);
@@ -121,7 +121,7 @@ router.post('/register', async (req, res) => {
     if (user) {
       const accessToken = await generateToken(
         { user_id: user.id },
-        { expiresIn: '24m', subject: 'access_token' }
+        { expiresIn: '24h', subject: 'access_token' }
       );
 
       await updateEmailAuthByLogged(user.email);
