@@ -89,10 +89,31 @@ export const upsertEmailAuth = async (email: string, code: string) => {
 
     if (connection) {
       await connection.execute(
-        'INSERT INTO `daily-coffee`.email_auth (email, code) VALUES ' +
-          `("${email}", "${code}") ` +
+        'INSERT INTO `daily-coffee`.email_auth (email, code, logged) VALUES ' +
+          `("${email}", "${code}", FALSE) ` +
           'ON DUPLICATE KEY UPDATE email=' +
-          `"${email}", code="${code}"`
+          `"${email}", code="${code}", logged=FALSE`
+      );
+    }
+  } catch (e) {
+    throw e;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
+export const updateEmailAuthByLogged = async (email: string) => {
+  let connection = null;
+
+  try {
+    connection = await getConnection();
+
+    if (connection) {
+      await connection.execute(
+        'UPDATE `daily-coffee`.email_auth SET logged=TRUE WHERE ' +
+          `email="${email}"`
       );
     }
   } catch (e) {

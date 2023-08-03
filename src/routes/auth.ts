@@ -4,6 +4,7 @@ import {
   findEmailAuthByCode,
   findUserByEmail,
   findUserByNickname,
+  updateEmailAuthByLogged,
   upsertEmailAuth,
 } from '../database';
 import mailer from '../lib/mail';
@@ -55,15 +56,19 @@ router.get('/code/:code', async (req, res) => {
   try {
     const emailAuth = await findEmailAuthByCode(code);
 
-    if (!emailAuth || emailAuth.logged) {
-      return res.status(201).json({ checked: false });
+    if (!emailAuth) {
+      return res.status(404).send('NOT_FOUND');
+    }
+
+    if (emailAuth.logged) {
+      return res.status(403).send('TOKEN_ALREADY_USED');
     }
 
     if (
       (new Date().getTime() - emailAuth.updated_at.getTime()) / (60 * 1000) >
       60
     ) {
-      return res.status(201).json({ checked: false });
+      return res.status(403).send('EXPIRED_CODE');
     }
 
     const user = await findUserByEmail(emailAuth.email);
@@ -75,6 +80,8 @@ router.get('/code/:code', async (req, res) => {
         { user_id: user.id },
         { expiresIn: '24m', subject: 'access_token' }
       );
+
+      await updateEmailAuthByLogged(user.email);
 
       return res.status(200).json({
         user: {
@@ -116,6 +123,8 @@ router.post('/register', async (req, res) => {
         { user_id: user.id },
         { expiresIn: '24m', subject: 'access_token' }
       );
+
+      await updateEmailAuthByLogged(user.email);
 
       res.status(201).json({
         user: {
