@@ -20,7 +20,6 @@ router.post('/sendemail', async (req, res) => {
     const user = await findUserByEmail(email);
 
     const code = nanoid(16);
-    await upsertEmailAuth(email, code);
 
     try {
       await mailer.sendEmail({
@@ -37,6 +36,8 @@ router.post('/sendemail', async (req, res) => {
           user ? 'email-login' : 'register'
         }?code=${code}</a></div><br/><div>이 링크는 1시간동안 유효합니다. </div></div>`,
       });
+
+      await upsertEmailAuth(email, code);
     } catch (err) {
       throw err;
     } finally {
@@ -63,7 +64,6 @@ router.get('/code/:code', async (req, res) => {
     if (emailAuth.logged) {
       return res.status(403).send('TOKEN_ALREADY_USED');
     }
-
     if (
       (new Date().getTime() - emailAuth.updated_at.getTime()) / (60 * 1000) >
       60

@@ -1,32 +1,19 @@
 import express from 'express';
-import passport from 'passport';
+import { isLoggedIn } from './middlewares';
 import { UserType } from '../database';
 
 const router = express.Router();
 
-router.get('/', (req, res, next) => {
-  passport.authenticate(
-    'jwt',
-    { session: false },
-    (error: any, user: UserType, info: any) => {
-      if (error) {
-        console.error(error);
-        return next(error);
-      }
+router.get('/', isLoggedIn, (req, res, next) => {
+  const { email, nickname } = req.user as UserType;
 
-      if (info) {
-        return res.status(401).send(info.reason);
-      }
-
-      return res.status(201).json({
-        email: user.email,
-        nickname: user.nickname,
-      });
-    }
-  )(req, res, next);
+  return res.status(201).json({
+    email,
+    nickname,
+  });
 });
 
-router.post('/logout', (req, res, next) => {
+router.post('/logout', isLoggedIn, (req, res, next) => {
   // reset Cookie;
   return res.status(204).send('ok');
 });
