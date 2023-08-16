@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth';
 import userRouter from './routes/user';
+import logRouter from './routes/log';
 import passport from 'passport';
 import passportConfig from './passport/jwt';
 
@@ -24,6 +25,7 @@ passportConfig();
 
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
+app.use('/log', logRouter);
 
 app.listen('8080', () => {
   console.log(`
