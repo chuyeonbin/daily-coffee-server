@@ -185,4 +185,30 @@ export const createUser = async (email: string, nickname: string) => {
   }
 };
 
+export const createDateRecord = async (
+  price: number,
+  cafe: string,
+  coffee: string,
+  date: string,
+  userId: number
+) => {
+  let connection = null;
+  try {
+    connection = await getConnection();
+
+    if (connection) {
+      await connection.execute(
+        'INSERT INTO `daily-coffee`.date_record (price, cafe, coffee, date, user_id) VALUES ' +
+          `("${price}", "${cafe}", "${coffee}", "${date}", "${userId}")`
+      );
+    }
+  } catch (e) {
+    throw e;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
 export default pool;
