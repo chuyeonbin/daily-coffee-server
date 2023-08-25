@@ -32,6 +32,25 @@ export interface UserType extends RowDataPacket {
   updated_at: Date;
 }
 
+interface EmailAuthType extends RowDataPacket {
+  id: number;
+  email: string;
+  code: string;
+  logged: boolean;
+  create_at: Date;
+  updated_at: Date;
+}
+
+interface DateRecordType extends RowDataPacket {
+  id: number;
+  date: string;
+  cafe: string;
+  coffee: string;
+  price: number;
+  create_at: string;
+  updated_at: string;
+}
+
 export const findUserById = async (id: number) => {
   let connection = null;
   try {
@@ -71,15 +90,6 @@ export const findUserByEmail = async (email: string) => {
     }
   }
 };
-
-interface EmailAuthType extends RowDataPacket {
-  id: number;
-  email: string;
-  code: string;
-  logged: boolean;
-  create_at: Date;
-  updated_at: Date;
-}
 
 export const upsertEmailAuth = async (email: string, code: string) => {
   let connection = null;
@@ -201,6 +211,36 @@ export const createDateRecord = async (
         'INSERT INTO `daily-coffee`.date_record (price, cafe, coffee, date, user_id) VALUES ' +
           `("${price}", "${cafe}", "${coffee}", "${date}", "${userId}")`
       );
+    }
+  } catch (e) {
+    throw e;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
+export const seachYearOfMonthDataById = async (
+  id: number,
+  year: number,
+  month: number
+) => {
+  let connection = null;
+  try {
+    connection = await getConnection();
+
+    if (connection) {
+      const [field] = await connection.execute<DateRecordType[]>(
+        'SELECT * FROM `daily-coffee`.date_record WHERE user_id=' +
+          `${id}` +
+          ' AND YEAR(date) = ' +
+          `${year}` +
+          ' AND MONTH(date) = ' +
+          `${month}` +
+          ' ORDER BY date'
+      );
+      return field;
     }
   } catch (e) {
     throw e;
