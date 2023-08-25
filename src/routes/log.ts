@@ -1,9 +1,62 @@
 import express from 'express';
 import { isLoggedIn } from './middlewares';
-import { UserType, createDateRecord, findUserByEmail } from '../database';
+import {
+  UserType,
+  createDateRecord,
+  findUserByEmail,
+  seachYearOfMonthDataById,
+} from '../database';
 import { format as timeZoneFormat } from 'date-fns-tz';
+import { getMonth, getYear } from 'date-fns';
 
 const router = express.Router();
+
+router.get('/:date', isLoggedIn, async (req, res) => {
+  const { email } = req.user as UserType;
+
+  try {
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+      return res.status(404).send('NOT_FOUND');
+    }
+
+    const { id: userId } = user;
+
+    const date = new Date(req.params.date);
+    const currentYear = getYear(date);
+    const currnentMonth = getMonth(date) + 1;
+
+    const logs = await seachYearOfMonthDataById(
+      userId,
+      currentYear,
+      currnentMonth
+    );
+
+    if (!logs) {
+      return res.status(404).send('NOT_FOUND');
+    }
+
+    const changeTimezoneLogs = logs.map(log => {
+      const date = timeZoneFormat(new Date(log.date), 'yyyy-MM-dd HH:mm:ss');
+      const createdAt = timeZoneFormat(
+        new Date(log.created_at),
+        'yyyy-MM-dd HH:mm:ss'
+      );
+      const updatedAt = timeZoneFormat(
+        new Date(log.updated_at),
+        'yyyy-MM-dd HH:mm:ss'
+      );
+
+      return { ...log, date, created_at: createdAt, updated_at: updatedAt };
+    });
+
+    return res.status(200).json({ logs: changeTimezoneLogs });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+});
 
 router.post('/', isLoggedIn, async (req, res) => {
   const { email } = req.user as UserType;
