@@ -5,6 +5,7 @@ import {
   createDateRecord,
   findUserByEmail,
   seachYearOfMonthDataById,
+  updateDateLogById,
 } from '../database';
 import { format as timeZoneFormat } from 'date-fns-tz';
 import { getMonth, getYear } from 'date-fns';
@@ -77,6 +78,32 @@ router.post('/', isLoggedIn, async (req, res) => {
     await createDateRecord(price, cafe, coffee, date, userId);
 
     return res.status(201).send('CREATE_DATE_LOG');
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+});
+
+router.patch('/', isLoggedIn, async (req, res) => {
+  const { email } = req.user as UserType;
+
+  try {
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+      return res.status(404).send('NOT_FOUND');
+    }
+
+    const { id: userId } = user;
+
+    const parseDate = new Date(JSON.parse(req.body.date as string));
+    const date = timeZoneFormat(parseDate, 'yyyy-MM-dd HH:mm:ss');
+
+    const { price, cafe, coffee, id } = req.body;
+
+    await updateDateLogById(id, price, cafe, coffee, date, userId);
+
+    return res.status(201).send('UPDATE_DATE_LOG');
   } catch (error) {
     console.error(error);
     throw error;
