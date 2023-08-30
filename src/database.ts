@@ -251,4 +251,36 @@ export const seachYearOfMonthDataById = async (
   }
 };
 
+export const updateDateLogById = async (
+  id: number,
+  price: number,
+  cafe: string,
+  coffee: string,
+  date: string,
+  userId: number
+) => {
+  let connection = null;
+  try {
+    connection = await getConnection();
+
+    if (connection) {
+      await connection.execute<DateRecordType[]>(
+        'UPDATE `daily-coffee`.date_record SET ' +
+          `date="${date}", ` +
+          `cafe="${cafe}", ` +
+          `coffee="${coffee}", ` +
+          `price= ${price} ` +
+          'WHERE ' +
+          `id=${id} AND user_id=${userId}`
+      );
+    }
+  } catch (e) {
+    throw e;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
 export default pool;
