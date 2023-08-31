@@ -3,6 +3,7 @@ import { isLoggedIn } from './middlewares';
 import {
   UserType,
   createDateRecord,
+  deleteDateRecordById,
   findUserByEmail,
   seachYearOfMonthDataById,
   updateDateLogById,
@@ -104,6 +105,27 @@ router.patch('/', isLoggedIn, async (req, res) => {
     await updateDateLogById(id, price, cafe, coffee, date, userId);
 
     return res.status(201).send('UPDATE_DATE_LOG');
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+});
+
+router.delete('/:id', isLoggedIn, async (req, res) => {
+  const { email } = req.user as UserType;
+
+  try {
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+      return res.status(404).send('NOT_FOUND');
+    }
+
+    const id = parseInt(req.params.id);
+
+    await deleteDateRecordById(id);
+
+    return res.status(200).json({ id });
   } catch (error) {
     console.error(error);
     throw error;
