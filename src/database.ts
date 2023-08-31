@@ -283,4 +283,23 @@ export const updateDateLogById = async (
   }
 };
 
+export const deleteDateRecordById = async (id: number) => {
+  let connection = null;
+  try {
+    connection = await getConnection();
+
+    if (connection) {
+      await connection.execute(
+        'DELETE FROM `daily-coffee`.date_record WHERE id=' + `${id}`
+      );
+    }
+  } catch (e) {
+    throw e;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
 export default pool;
